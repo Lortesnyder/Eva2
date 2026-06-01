@@ -1,22 +1,33 @@
 #!/bin/bash
+set -e
 
-mkdir tempdir
-mkdir tempdir/templates
-mkdir tempdir/static
+rm -rf tempdir
+mkdir -p tempdir/templates
+mkdir -p tempdir/static
 
-cp sample_app.py tempdir/.
-cp -r templates/* tempdir/templates/.
-cp -r static/* tempdir/static/.
+cp sample_app.py tempdir/
+cp -r templates/* tempdir/templates/
+cp -r static/* tempdir/static/
 
-echo "FROM python:3.10-slim" >> tempdir/Dockerfile
-echo "RUN pip install flask" >> tempdir/Dockerfile
-echo "COPY  ./static /home/myapp/static/" >> tempdir/Dockerfile
-echo "COPY  ./templates /home/myapp/templates/" >> tempdir/Dockerfile
-echo "COPY  sample_app.py /home/myapp/" >> tempdir/Dockerfile
-echo "EXPOSE 9999" >> tempdir/Dockerfile
-echo "CMD python /home/myapp/sample_app.py" >> tempdir/Dockerfile
+cat > tempdir/Dockerfile <<'EOF'
+FROM python:3.10-slim
+
+WORKDIR /home/myapp
+
+RUN python -m pip install --no-cache-dir --progress-bar off flask
+
+COPY ./static /home/myapp/static/
+COPY ./templates /home/myapp/templates/
+COPY sample_app.py /home/myapp/
+
+EXPOSE 9999
+
+CMD ["python", "/home/myapp/sample_app.py"]
+EOF
 
 cd tempdir
+
+docker rm -f samplerunning || true
 docker build -t sampleapp .
-docker run -t -d -p 9999:9999 --name samplerunning sampleapp
-docker ps -a 
+docker run -d -p 9999:9999 --name samplerunning sampleapp
+docker ps -a
