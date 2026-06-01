@@ -29,5 +29,5 @@ cd tempdir
 
 docker rm -f samplerunning || true
 docker build -t sampleapp .
-docker run -d -p 9999:9999 --name samplerunning sampleapp
+docker run -d -p 9999:9999 --name samplerunning sampleapp python /home/myapp/sample_app.py
 docker ps -a
