@@ -22,7 +22,7 @@ RUN python -m pip install --no-cache-dir --progress-bar off flask
 
 EXPOSE 9999
 
-CMD ["python", "/home/myapp/sample_app.py"]
+CMD ["python", "/home/devasc/labs/devnet-src/jenkins/sample-app/sample_app.py"]
 EOF
 
 cd tempdir
